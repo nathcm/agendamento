@@ -2,8 +2,7 @@ import express from 'express';
 
 const routes = express.Router();
 
-routes.get('/', (request, response) => {
-  return response.json({ message: 'Hello World' });
-});
+// routes.get('/offices', officesControlles.index);
+// routes.post('/offices', officesControlles.create);
 
 export default routes;
