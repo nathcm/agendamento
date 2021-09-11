@@ -5,8 +5,6 @@ export async function up(knex: Knex) {
     table.increments('id').primary();
     table.integer('workstation').notNullable();
     table.date('date').notNullable();
-    table.integer('from').notNullable();
-    table.integer('to').notNullable();
 
     table.integer('user_id')
       .notNullable()

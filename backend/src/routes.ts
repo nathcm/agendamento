@@ -1,26 +1,15 @@
 import express from 'express';
 import knex from './database/connection';
 import OfficesController from './controllers/OfficesController';
+import DeskControllers from './controllers/DeskControllers';
 
 const routes = express.Router();
 const officesController = new OfficesController();
-
-routes.get('/offices', officesController.index);
+const deskController = new DeskControllers();
 
 // Usuário informa nome e e-mail;
-routes.post('/users', async (request, response) => {
-  const { 
-    name,
-    email
-   } = request.body;
-
-   // Insere as informações do usuário no bd;
-   await knex('users').insert({
-     name,
-     email
-   });
-
-   return response.json({ success: true });
-});
+routes.post('/users', deskController.create);
+// Busca no DB para mostrar o escritório que o usuário selecionará;
+routes.get('/offices', officesController.index);
 
 export default routes;
