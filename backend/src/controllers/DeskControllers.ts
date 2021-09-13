@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Knex } from 'knex';
 
 import connection from '../database/connection';
 
@@ -12,9 +11,9 @@ export default class DeskController {
   async index(request: Request, response: Response) {
     const filters = request.query;
 
-    const city = filters.city as string;
-    const date = filters.date as string;
-    const workstation = filters.workstation as string;
+    const city = filters.city;
+    const date = filters.date;
+    const workstation = filters.workstation;
 
     // Verificação de informações
     if (!filters.city || !filters.date || !filters.workstation) {
@@ -23,6 +22,14 @@ export default class DeskController {
       })
     }
 
+    if (typeof city !== 'string') {
+      return response.send()
+    }
+
+    // verifica restrição
+    // const office = 
+
+    // Verificar se a desk já foi ocupada;
     const desk = await connection('offices')
     .whereExists(function() {
       this.select('desk.*')
@@ -51,40 +58,50 @@ export default class DeskController {
   
   async create(request: Request, response: Response) {
     const { 
-      email,
-      senha,
+      user_id,
+      office_id,
       city,
       date,
       workstation
      } = request.body;
 
+     // validação dos dados
+     // garantir que os tipos recebidos sejam os requeridos
+
      const trx = await connection.transaction();
   
      try{
-       // Insere as informações do usuário no bd;
-       const insertedUsersIds = await trx('users').insert({
-         email,
-         senha
-      });
+      // Seleciona o id do escritório selecionado pelo usuário
+      const office = await trx('offices').select('offices.restriction').where('id', '=', office_id);
 
-      // Pega o id do usuário para guardar na tabela 'desk';
-      const user_id = insertedUsersIds[0];
+      if(!office[0]) {
+        await trx.rollback();
+        
+        return response.status(400).json({
+          error: 'Office do not exists.'
+        })
+      }
 
-      // Seleciona o id do escritório;
-      const insertedOfficesIds = await trx('offices').select('offices.id');
+      // Seleciona a data escolhida pelo usuário
+      const workstation = await trx('desk').select('desk.workstation').where('date', '=', date).andWhere('office_id', '=', office_id);
+      
+      console.log(workstation)
 
-      // Pega o id do escritório para guardar na tabela 'desk';
-      const office_id = insertedOfficesIds[0];
+      // Verifica se o número de mesas agendadas está abaixo da restrição do escritório
+      if (workstation.length > office[0].restriction) {
+        await trx.rollback();
+        
+        return response.status(400).json({
+          error: 'Maximum capacity reached. Please, choose another day.'
+        })
+      }
 
-
-      const deskBooking = workstation.map((workstationBooking: WorkstationBooking) => {
-        return {
-          user_id,
-          office_id,
-          workstation: workstationBooking.workstation,
-          date: workstationBooking.date,
-        };
-      });
+      const deskBooking = [{
+        user_id,
+        office_id,
+        workstation,
+        date
+      }]
 
       // Insere os dados na tabela 'desk';
       await trx('desk').insert(deskBooking);
