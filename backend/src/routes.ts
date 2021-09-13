@@ -1,15 +1,21 @@
 import express from 'express';
-import knex from './database/connection';
-import OfficesController from './controllers/OfficesController';
+// import OfficesController from './controllers/OfficesController';
 import DeskControllers from './controllers/DeskControllers';
 
 const routes = express.Router();
-const officesController = new OfficesController();
+// const officesController = new OfficesController();
 const deskController = new DeskControllers();
 
-// Usuário informa nome e e-mail;
-routes.post('/users', deskController.create);
-// Busca no DB para mostrar o escritório que o usuário selecionará;
-routes.get('/offices', officesController.index);
+// Faz o login;
+// routes.get('/users', deskController.index);
+// routes.post('/users', deskController.create);
+// Seleciona o escritório;
+// routes.get('/offices', officesController.index);
+// Selecionada a data;
+// routes.get('/date', deskController.index);
+// routes.post('/date', deskController.create);
+// Seleciona a mesa;
+routes.get('/desk', deskController.index);
+routes.post('/desk', deskController.create);
 
 export default routes;

@@ -13,17 +13,17 @@ export default class DeskController {
     const filters = request.query;
 
     const city = filters.city as string;
-    const workstation = filters.workstation as string;
     const date = filters.date as string;
+    const workstation = filters.workstation as string;
 
     // Verificação de informações
-    if (!filters.city || !filters.workstation || !filters.date) {
+    if (!filters.city || !filters.date || !filters.workstation) {
       return response.status(400).json({
         error: 'Missing filters to search workstation'
       })
     }
 
-    const deskVerified = await connection('offices')
+    const desk = await connection('offices')
     .whereExists(function() {
       this.select('desk.*')
       .from('desk')
@@ -34,23 +34,27 @@ export default class DeskController {
     .where('offices.city', '=', city)
     .join('users', 'desk.user_id', '=', 'users.id')
     .select(['desk.*', 'users.*']);
-    // Usuário selecionará a data;
-    // Verificar se a capacidade total com restrição foi atingida,
-    // Se foi atingida, solicitar escolha de outra data;
-    // Se não foi atingida, mostrar as mesas disponíveis;
-
-    // Usuário selecionou a mesa;
-    // Restringir as mesas ao lado da selecionada;
-    // Diminuir uma mesa na capacidade com restrições;
-
-    // Após confirmar a reserva, mostrar a data e mesa selecionadas;
     
+    return response.json(desk);
   }
+  
+  // Usuário selecionará a data;
+  // Verificar se a capacidade total com restrição foi atingida,
+  // Se foi atingida, solicitar escolha de outra data;
+  // Se não foi atingida, mostrar as mesas disponíveis;
 
+  // Usuário selecionou a mesa;
+  // Restringir as mesas ao lado da selecionada;
+  // Diminuir uma mesa na capacidade com restrições;
+
+  // Após confirmar a reserva, mostrar a data e mesa selecionadas;
+  
   async create(request: Request, response: Response) {
     const { 
       email,
       senha,
+      city,
+      date,
       workstation
      } = request.body;
 
