@@ -29,7 +29,7 @@ export default class DeskController {
       if(!office[0]) {
         await trx.rollback();
         
-        return response.status(400).json({
+        return response.status(404).json({
           error: 'Office do not exists.'
         })
       }
@@ -37,7 +37,7 @@ export default class DeskController {
 
       await trx.commit();
           
-      return response.status(201).json(workstations); 
+      return response.status(200).json(workstations); 
 
     } catch (err) {
       console.log(err);
@@ -71,6 +71,10 @@ export default class DeskController {
 
      // validação dos dados
      // garantir que os tipos recebidos sejam os requeridos
+     // email - required
+     //password - tamanho(min 8)
+     // data - required
+     // workstation - required
 
      const trx = await connection.transaction();
   
@@ -81,7 +85,7 @@ export default class DeskController {
       if(!office[0]) {
         await trx.rollback();
         
-        return response.status(400).json({
+        return response.status(404).json({
           error: 'Office do not exists.'
         })
       }
@@ -95,7 +99,7 @@ export default class DeskController {
       if (workstations.length > office[0].restriction) {
         await trx.rollback();
         
-        return response.status(400).json({
+        return response.status(404).json({
           error: 'Maximum capacity reached. Please, choose another day.'
         })
       }
@@ -103,7 +107,7 @@ export default class DeskController {
       if (workstations.find((desk) => desk.workstation === workstation)) {
         await trx.rollback();
         
-        return response.status(400).json({
+        return response.status(404).json({
           error: 'Desk reserved. Please choose another one.'
         })
       }
