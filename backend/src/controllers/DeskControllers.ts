@@ -2,47 +2,52 @@ import { Request, Response } from 'express';
 
 import connection from '../database/connection';
 
-interface WorkstationBooking {
-  workstation: number;
-  date: string;
-}
-
 export default class DeskController {
   async index(request: Request, response: Response) {
-    const filters = request.query;
+    const filters = request.body;
 
-    const city = filters.city;
+    const office_id = filters.office_id;
     const date = filters.date;
-    const workstation = filters.workstation;
 
     // Verificação de informações
-    if (!filters.city || !filters.date || !filters.workstation) {
+    if (!office_id || !date) {
       return response.status(400).json({
         error: 'Missing filters to search workstation'
       })
     }
 
-    if (typeof city !== 'string') {
+    if (typeof office_id !== 'number') {
       return response.send()
     }
 
-    // verifica restrição
-    // const office = 
+    const trx = await connection.transaction();
 
-    // Verificar se a desk já foi ocupada;
-    const desk = await connection('offices')
-    .whereExists(function() {
-      this.select('desk.*')
-      .from('desk')
-      .whereRaw('`desk`.`office_id` = `offices`.`id`')
-      .whereRaw('`desk`.`workstation` = ??', [Number(workstation)])
-      .whereRaw('`desk`.`date` = ??', [String(date)])
-    })
-    .where('offices.city', '=', city)
-    .join('users', 'desk.user_id', '=', 'users.id')
-    .select(['desk.*', 'users.*']);
-    
-    return response.json(desk);
+    try{
+
+      const office = await trx('offices').select('offices.restriction').where('id', '=', office_id);
+
+      if(!office[0]) {
+        await trx.rollback();
+        
+        return response.status(400).json({
+          error: 'Office do not exists.'
+        })
+      }
+      const workstations = await trx('desk').select('desk.workstation').where('date', '=', date).andWhere('office_id', '=', office_id);
+
+      await trx.commit();
+          
+      return response.status(201).json(workstations); 
+
+    } catch (err) {
+      console.log(err);
+
+      await trx.rollback();
+
+      return response.status(400).json({
+        error: 'Unexpected error while reading the database.'
+      })
+    }
   }
   
   // Usuário selecionará a data;
@@ -60,7 +65,6 @@ export default class DeskController {
     const { 
       user_id,
       office_id,
-      city,
       date,
       workstation
      } = request.body;
@@ -83,16 +87,24 @@ export default class DeskController {
       }
 
       // Seleciona a data escolhida pelo usuário
-      const workstation = await trx('desk').select('desk.workstation').where('date', '=', date).andWhere('office_id', '=', office_id);
+      const workstations = await trx('desk').select('desk.workstation').where('date', '=', date).andWhere('office_id', '=', office_id);
       
-      console.log(workstation)
+      console.log(workstations)
 
       // Verifica se o número de mesas agendadas está abaixo da restrição do escritório
-      if (workstation.length > office[0].restriction) {
+      if (workstations.length > office[0].restriction) {
         await trx.rollback();
         
         return response.status(400).json({
           error: 'Maximum capacity reached. Please, choose another day.'
+        })
+      }
+
+      if (workstations.find((desk) => desk.workstation === workstation)) {
+        await trx.rollback();
+        
+        return response.status(400).json({
+          error: 'Desk reserved. Please choose another one.'
         })
       }
 
