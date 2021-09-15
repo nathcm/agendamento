@@ -1,0 +1,43 @@
+:root {
+  --white: #FFFFFF;
+  --black: #000000;
+  --text: #36357E;
+  --orange: #FE4400;
+  --orange-hover: #D03800;
+  --orange-dark: #B93200;
+  --orange-light: #FE885C;
+  --blue: #404099;
+  --blue-dark: #2A2962;
+  --blue-light: #7474B4;
+  --blue-light-desk: #A8A8D0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100vh;
+}
+
+body {
+  background: var( --white);
+}
+
+body, input, button, textarea {
+  font: 600 32px Montserrat, sans-serif;
+}
+
+@media(max-width: 1080px) {
+  html {
+      font-size: 93.75%;
+  }
+}
+
+@media(max-width: 720px) {
+  html {
+      font-size: 87.5%;
+  }
+}
