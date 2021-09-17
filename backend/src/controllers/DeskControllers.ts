@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
+import { request, Request, Response } from 'express';
 
 import connection from '../database/connection';
 
 export default class DeskController {
   async index(request: Request, response: Response) {
-    const filters = request.body;
+    // const filters = request.query;
 
-    const office_id = filters.office_id;
-    const date = filters.date;
+    const office_id = Number(request.query.office_id);
+    const date = request.query.date?.toString();
 
     // Verificação de informações
     if (!office_id || !date) {
@@ -25,7 +25,6 @@ export default class DeskController {
     try{
 
       const office = await trx('offices').select('offices.restriction').where('id', '=', office_id);
-
       if(!office[0]) {
         await trx.rollback();
         
@@ -36,11 +35,10 @@ export default class DeskController {
       const workstations = await trx('desk').select('desk.workstation').where('date', '=', date).andWhere('office_id', '=', office_id);
 
       await trx.commit();
-          
+
       return response.status(200).json(workstations); 
 
     } catch (err) {
-      console.log(err);
 
       await trx.rollback();
 
@@ -93,8 +91,6 @@ export default class DeskController {
       // Seleciona a data escolhida pelo usuário
       const workstations = await trx('desk').select('desk.workstation').where('date', '=', date).andWhere('office_id', '=', office_id);
       
-      console.log(workstations)
-
       // Verifica se o número de mesas agendadas está abaixo da restrição do escritório
       if (workstations.length > office[0].restriction) {
         await trx.rollback();
@@ -126,7 +122,6 @@ export default class DeskController {
           
       return response.status(201).send();       
      } catch (err) {
-       console.log(err);
 
        await trx.rollback();
 

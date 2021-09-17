@@ -5,6 +5,7 @@ import knex from '../database/connection';
 class OfficesController {
   async index(request: Request, response: Response) {
     const offices = await knex('offices').select('*');
+    console.log('api aqui');
   
     const serializedOffices = offices.map(office => {
       return {

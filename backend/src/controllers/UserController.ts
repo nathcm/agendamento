@@ -5,31 +5,30 @@ import connection from '../database/connection';
 export default class UserController {
   async create(request: Request, response: Response) {
     const { 
+      name,
       email,
-      senha,
      } = request.body;
 
      const trx = await connection.transaction();
 
      try{
-      const createdUser = await trx('users').select('users.id').where('email', '=', email);
+      let createdUser = await trx('users').select('users.id', 'users.name').where('email', '=', email);
 
       if (createdUser[0]) {
-        await trx.rollback();
+        await trx('users').insert({
+          name,
+          email
+        });
         
-        return response.status(400).json({
-          error: 'User already exists.'
-        })
-      }
-      // Insere as informações do usuário no bd;
-      await trx('users').insert({
-        email,
-        senha
-      });
+        await trx.commit();
 
-      await trx.commit();
-          
-      return response.status(201).send(); 
+        createdUser = await trx('users').select('users.id', 'users.name').where('email', '=', email);
+        
+        return response.status(201).json(createdUser);
+      }
+      
+      // Insere as informações do usuário no bd;
+      return response.status(200).json(createdUser);
      } catch (err) {
       console.log(err);
 
