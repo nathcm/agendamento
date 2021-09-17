@@ -35,10 +35,6 @@
   margin-bottom: 50px;
 }
 
-#login-form {
-  display: block;
-}
-
 .input-block {
   display: flex;
   align-items: flex-start;

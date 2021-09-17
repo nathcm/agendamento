@@ -5,7 +5,6 @@
 }
 
 #page-content {
-  display: block;
   margin-top: 270px;
 }
 
@@ -27,9 +26,8 @@
 }
 
 .buttons {
-  width: 20%;
-  margin-right: 100px;
-  margin-bottom: 30px;
+  width: 350px;
+  margin-bottom: 50px;
 }
 
 .btn-submit-container {
@@ -43,4 +41,72 @@
 
 #btn-santos:hover, #btn-sp:hover {
   background-color: var(--blue-dark);
+}
+
+@media(max-width: 720px) {
+  html {
+      font-size: 87.5%;
+  }
+
+  #page-content {
+    margin-top: 150px;
+    margin-bottom: 0;
+  }
+
+  #page-content h1 {
+    font-size: 24px;
+    margin-bottom: 0;
+  }
+
+  .offices-container {
+    display: none;
+  }
+
+  .buttons {
+    width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    margin-top: 50px;
+  }
+
+  .btn-submit-container {
+    width: 300px;
+  }
+}
+
+@media(min-width:721px) and (max-width: 1080px) {
+  html {
+    font-size: 93.75%;
+}
+
+#page-content {
+  margin-top: 280px;
+  margin-bottom: 0;
+}
+
+#page-content h1 {
+  font-size: 28px;
+  margin-bottom: 0;
+}
+
+.offices-container {
+  display: none;
+}
+
+.buttons {
+  width: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  margin-top: 80px;
+}
+
+.btn-submit-container {
+  width: 350px;
+}
 }

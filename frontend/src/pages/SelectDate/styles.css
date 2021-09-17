@@ -4,11 +4,11 @@
   background-color: var(--white);
 }
 
-#page-content {
-  display: block;
+#page-date-content {
+  margin-top: 250px;
 }
 
-#page-content h1 {
+#page-date-content h1 {
   text-align: center;
   font-size: 30px;
   color: var(--blue-dark);
@@ -19,4 +19,78 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.image-content {
+  margin-left: 180px;
+}
+
+.calendar-content {
+  margin-right: 300px;
+  margin-top: 10px;
+}
+
+.calendar {
+  width: 600px !important;
+}
+
+.react-calendar {
+  border: none !important;
+  line-height: 0.7rem !important;
+}
+
+.react-calendar button {
+  color: var(--blue-dark) !important;
+  line-height: 0.5rem !important;
+}
+
+#btn-calendar {
+  width: 450px;
+  margin-left: 12.5%;
+  margin-right: -50%;
+}
+
+@media(max-width: 720px) {
+  #page-date-content {
+    margin-top: 150px;
+  }
+
+  #page-date-content h1 {
+    font-size: 24px;
+  }
+
+  #page-date-container {
+    width: 100%;
+  }
+
+  .image-content {
+    display: none;
+  }
+
+  .calendar-content {
+    width: 100%;
+  }
+
+  .react-calendar {
+    border: none !important;
+    font-size: 20px !important;
+    line-height: 0.6rem !important;
+  }
+
+  .react-calendar span {
+    font-size: 20px !important;
+  }
+  
+  .react-calendar button {
+    color: var(--blue-dark) !important;
+    font-size: 18px !important;
+    line-height: 0.6rem !important;
+  }
+
+  #btn-calendar {
+    width: 250px;
+    margin-top: 70px;
+    margin-left: 17.5%;
+    margin-right: -50%;
+  }
 }
