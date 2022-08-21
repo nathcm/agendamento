@@ -29,7 +29,8 @@ function Login() {
         userId: response.data.id,
         name
       });
-    }).catch(() => {
+    }).catch((error) => {
+      console.log(error)
       alert('Erro no cadastro!');
     })
   }
